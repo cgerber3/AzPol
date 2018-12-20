@@ -1,0 +1,51 @@
+{
+  "description": "This policy audits all SQL databases for Transparent Data Encryption(TDE).",
+  "displayName": "Audit SQL TDE",
+  "ManagementGroupName": "skyForce_Root_MgmtGroup",
+  "mode": "indexed",
+  "name": "audit-sql-tde",
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "AuditIfNotExists",
+        "Disabled"
+      ],
+      "defaultValue": "AuditIfNotExists"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Sql/servers/databases"
+        },
+        {
+          "field": "name",
+          "notEquals": "master"
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+        "name": "current",
+        "existenceCondition": {
+          "allOf": [
+            {
+              "field": "Microsoft.Sql/transparentDataEncryption.status",
+              "equals": "enabled"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "policyType": "Custom"
+}

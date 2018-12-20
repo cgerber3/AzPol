@@ -1,0 +1,41 @@
+{
+  "description": "This policy audits all NICs that have a Public IP address attached.",
+  "displayName": "Audit use of Public IP addresses",
+  "ManagementGroupName": "skyForce_Root_MgmtGroup",
+  "mode": "indexed",
+  "name": "audit-PubIP-usage",
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "effect",
+        "description": null
+      },
+      "allowedValues": [
+        "Audit",
+        "Disabled"
+      ],
+      "defaultValue": "Audit"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Network/networkInterfaces"
+        },
+        {
+          "not": {
+            "field": "Microsoft.Network/networkInterfaces/ipconfigurations[*].publicIpAddress.id",
+            "exists": false
+          }
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  },
+  "policyType": "Custom"
+}
